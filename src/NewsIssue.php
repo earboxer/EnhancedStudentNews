@@ -201,10 +201,17 @@ class NewsIssue {
 			//$tocOutput .= '<ul style="padding-left: 24px;">' . "\n";
 			//$tocOutput .= '<ul>' . "\n";
 			$tocOutput .= '<ul style="padding-left: 5px; margin-top: 8px;">' . "\n";
+			$outputtedNewsTitles = array();
 			foreach ($this->newsItems as $newsItem) {
-				$tocOutput .= "\t" . $newsItem->getTOCEntry();
-				if (!$hasAnyFood && $newsItem->hasFood) {
-					$hasAnyFood = true;
+				if ( $outputtedNewsTitles[$newsItem->getHash()] == 1){
+					//A title was removed
+				}
+				else {
+					$tocOutput .= "\t" . $newsItem->getTOCEntry();
+					if (!$hasAnyFood && $newsItem->hasFood) {
+						$hasAnyFood = true;
+					}
+					$outputtedNewsTitles[$newsItem->getHash()] = 1;
 				}
 			}
 			$tocOutput .= '</ul>' . "\n";
@@ -222,8 +229,15 @@ class NewsIssue {
 		$out .= '</div>' . "\n";
 		
 		// the news items themselves
+		$outputtedNewsItems = array();
 		foreach ($this->newsItems as $newsItem) {
-			$out .= $newsItem->getFormattedHTML($this->newsItemsCount > 1);
+			if ( $outputtedNewsItems[$newsItem->getHash()] == 1){
+				$out .= "Removed one duplicate item.";
+			}
+			else {
+				$out .= $newsItem->getFormattedHTML($this->newsItemsCount > 1);
+				$outputtedNewsItems[$newsItem->getHash()] = 1;
+			}
 		}
 		
 		// navigation for web format (again)

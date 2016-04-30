@@ -217,6 +217,15 @@ class NewsItem {
 		return $newTitle;
 	}
 	
+/**
+ * getHash creates a hash unique to each entry by body and title
+ */
+	function getHash() {
+		$nonContentCharacters = array( ' ', '.', ',', '\t' );
+		$plainString =  str_replace( $nonContentCharacters, '', strtolower( $this->title . $this->body ) );
+		return hash( "md5", $plainString );
+	}
+	
 	public static function fixSpecialCharacters($text) {
 		$fixedText = $text;
 		
