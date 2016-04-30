@@ -1,4 +1,4 @@
-<?php
+ch<?php
 
 // WARNING -- DO NOT SAVE THIS FILE USING cPanel
 // OR THE SPECIAL CHARACTERS WILL BE CORRUPTED!
@@ -248,8 +248,9 @@ class NewsItem {
 
 	function getHash() {
 		//return $this->title;
-		return str_replace(array(' ', '.', ',', '\n', '\t' ), array(''), strtolower($this->body . $this->title));
-		return hash("md4", $this->title);
+		$nonContentCharacters = array( ' ', '.', ',', '\t' );
+		$plainString =  str_replace( $nonContentCharacters, '', strtolower( $this->title . $this->body ) );
+		return hash( "md5", $plainString );
 	}
 	
 	private function autoSuperscriptOrdinals($text) {

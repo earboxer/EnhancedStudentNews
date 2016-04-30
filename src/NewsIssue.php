@@ -16,6 +16,8 @@ class NewsIssue {
 	public $newsItems = array();
 	public $newsItemsCount = 0;
 	
+	public $printed = array();
+	
 	public $isCalvinNews = false;
 	public $isStudentNews = false;
 	
@@ -226,8 +228,13 @@ class NewsIssue {
 		$outputtedNewsItems = array();// Stores the hash values as keys
 		// the news items themselves
 		foreach ($this->newsItems as $newsItem) {
-			$out .= $newsItem->getHash();///'cheese';
-			$out .= $newsItem->getFormattedHTML($this->newsItemsCount > 1);
+			if ( $outputtedNewsItems[$newsItem->getHash()] == 1){
+				$out .= "Removed one duplicate item.";
+			}
+			else {
+				$out .= $newsItem->getFormattedHTML($this->newsItemsCount > 1);
+				$outputtedNewsItems[$newsItem->getHash()] = 1;
+			}
 		}
 		
 		// navigation for web format (again)
