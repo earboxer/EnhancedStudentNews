@@ -223,7 +223,7 @@ class NewsIssue {
 		// close title and contents box
 		$out .= '</div>' . "\n";
 		
-		$outputtedNewsItems = array();// Stores the hash values as keys
+		$outputtedNewsItems = array();//Stores the hash values as keys
 		// the news items themselves
 		foreach ($this->newsItems as $newsItem) {
 			$out .= $newsItem->getHash();///'cheese';

@@ -249,7 +249,7 @@ class NewsItem {
 	function getHash() {
 		//return $this->title;
 		return str_replace(array(' ', '.', ',', '\n', '\t' ), array(''), strtolower($this->body . $this->title));
-		return hash("md4", $this->title);
+		return hash("md5", $this->title);
 	}
 	
 	private function autoSuperscriptOrdinals($text) {
