@@ -262,7 +262,9 @@ class NewsIssue {
 					$events[$event[0]] .= $event[1] . $newsItem->getTOCEntry();
 				}
 				else {
-					$events[$event[0]] = $event[1] . $newsItem->getTOCEntry();
+					$events[$event[0]] =
+					"<h2 id = $event[0]>$event[0]</h2> "
+					. $event[1] . $newsItem->getTOCEntry();
 				}
 			}
 		}
