@@ -278,7 +278,7 @@ class NewsItem {
 	public function getEvents() {
 		$thearray = array();
 		$newBody = preg_match(
-		'/([^\.]*) (April|May|June|July|August|September|October|November|December|January|February|March) '
+		'/([^\.!><]*) (April|May|June|July|August|September|October|November|December|January|February|March) '
 			. '([0-9]+) (.[^ ]* .[^ ]*)/',
 		$this->body, $thearray);
 		if( $newBody ){
