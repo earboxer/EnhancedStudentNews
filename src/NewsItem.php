@@ -260,14 +260,14 @@ class NewsItem {
 	/**
 	 * linkDates() linkify's dates
 	 *	Receive: $text, a string with dates in it. (usually $this-body)
-	 *	Return; $newText, the text with links to dates like '#January31'
+	 *	Return: $newText, the text with links to dates like '#January31'
 	 */
 	private function linkDates($text) {
 		$newText = $text;
 		$newText = preg_replace(
 		'/(April|May|June|July|August|September|October|November|December|January|February|March) '
 			. '([0-9]+)/',
-		'<a href = #$1$2>$1 $2$3$4</a>', $newText);
+		'<a href = #$1$2>$1 $2</a>', $newText);
 		return $newText;
 	}
 	
