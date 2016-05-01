@@ -142,9 +142,7 @@ class NewsItem {
 			$out .= '<div style="background-color: #ffffff; padding: 16px 8px; border-radius: 0px 0px 12px 12px;">' . "\n";
 		}
 		
-		$html_body = $this->findDates(
-			$this->autoSuperscriptOrdinals($this->unwrapNewsItemText(linkEmailAddresses($this->body)))
-		);
+		$html_body = $this->autoSuperscriptOrdinals($this->unwrapNewsItemText(linkEmailAddresses($this->body)));
 		
 		$out .= $html_body . "\n" . '</div>';
 		
@@ -255,14 +253,6 @@ class NewsItem {
 		
 		
 		return $fixedText;
-	}
-	
-	private function findDates($text) {
-		$newText = $text;
-		$newText = preg_replace(
-		'/(April|May|June|July|August|September|October|November|December|January|February|March) '
-								. '([0-9]+)/', '<a href = #$1$2>$1 $2</a>', $newText);
-		return $newText;
 	}
 	
 	private function autoSuperscriptOrdinals($text) {
