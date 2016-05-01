@@ -275,14 +275,15 @@ class NewsItem {
 	 * getEvents() returns event dates and a description of them
 	 *	Receive: $length, an integer number of characters for brief
 	 *	Return: $events, an array
-	 * 		keys like 'January31'
+	 * 		keys in unix time
 	 * 		value with string brief of length less than $length characters
 	 * 			(not including elispses...)
 	 */
 	public function getEvents( $length = 100 ) {
 		$allEvents = array();
 		$matched = 1;
-		$bodyRest = str_replace( '<br />', ' ', $this->body);
+		$bodyRest = str_replace( array("<br />", "\t") , ' ', $this->title . '.' . $this->body);
+		$bodyRest = str_replace( "\n", '', $bodyRest);//Get rid of nonprinters
 		while ( $matched == 1 )
 		{
 			$thearray = array();
@@ -290,8 +291,8 @@ class NewsItem {
 				'/([^\.\!\>_]* ?)'	//Starts with not punctuation and an optional space
 					. '(April|May|June|July|August|September|October|November|December|January|February|March) '
 					. '([0-9]+)'	//Number
-					. '( ?[^\.!;]*)?'	//Optional non-punctuation
-					. '([\.!;])?/',	//Punctuation at the end
+					. '( ?[^\.!]*)?'	//Optional non-punctuation
+					. '([\.!])?/',	//Punctuation at the end
 				$bodyRest, $thearray);
 			
 			if ( $matched == 1 ){
@@ -328,11 +329,11 @@ class NewsItem {
 					}
 				}
 				
-				if( isset( $allEvents[ $thearray[2] . $thearray[3] ] ) ){
-					$allEvents[ $thearray[2] . $thearray[3] ] .= '<p>' . $brief . '</p>';
+				if( isset( $allEvents[ strtotime($thearray[2] . $thearray[3]) ] ) ){
+					$allEvents[ strtotime($thearray[2] . $thearray[3]) ] .= '<br \>' . $brief ;
 				}
 				else{
-					$allEvents[ $thearray[2] . $thearray[3] ] = $brief;
+					$allEvents[ strtotime($thearray[2] . $thearray[3]) ] = $brief;
 				}
 				$bodyArray = explode($thearray[0], $bodyRest);
 				$bodyRest = $bodyArray[1];

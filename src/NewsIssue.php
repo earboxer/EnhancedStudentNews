@@ -280,7 +280,7 @@ class NewsIssue {
 					}
 					else {
 						$events[$key] =
-						"<h2 id = $key>$key</h2> "
+						"<h2 id = " . date( 'Fj', $key). ">" . date( 'F j', $key) . "</h2> "
 						. $event[$key] . $newsItem->getTOCEntry();
 					}
 				}
