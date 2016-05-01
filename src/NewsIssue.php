@@ -203,7 +203,7 @@ class NewsIssue {
 			$tocOutput .= '<ul style="padding-left: 5px; margin-top: 8px;">' . "\n";
 			$outputtedNewsTitles = array();
 			foreach ($this->newsItems as $newsItem) {
-				if ( $outputtedNewsTitles[$newsItem->getHash()] == 1){
+				if ( isset( $outputtedNewsTitles[$newsItem->getHash()] ) ){
 					//A title was removed
 				}
 				else {
@@ -231,7 +231,7 @@ class NewsIssue {
 		// the news items themselves
 		$outputtedNewsItems = array();
 		foreach ($this->newsItems as $newsItem) {
-			if ( $outputtedNewsItems[$newsItem->getHash()] == 1){
+			if ( isset( $outputtedNewsItems[$newsItem->getHash()] ) ){
 				$out .= "Removed one duplicate item.";
 			}
 			else {
