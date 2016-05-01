@@ -142,7 +142,7 @@ class NewsItem {
 			$out .= '<div style="background-color: #ffffff; padding: 16px 8px; border-radius: 0px 0px 12px 12px;">' . "\n";
 		}
 		
-		$html_body = $this->findDates(
+		$html_body = $this->linkDates(
 			$this->autoSuperscriptOrdinals($this->unwrapNewsItemText(linkEmailAddresses($this->body)))
 		);
 		
@@ -257,11 +257,17 @@ class NewsItem {
 		return $fixedText;
 	}
 	
-	private function findDates($text) {
+	/**
+	 * linkDates() linkify's dates
+	 *	Receive: $text, a string with dates in it. (usually $this-body)
+	 *	Return; $newText, the text with links to dates like '#January31'
+	 */
+	private function linkDates($text) {
 		$newText = $text;
 		$newText = preg_replace(
 		'/(April|May|June|July|August|September|October|November|December|January|February|March) '
-								. '([0-9]+)/', '<a href = #$1$2>$1 $2</a>', $newText);
+			. '([0-9]+)/',
+		'<a href = #$1$2>$1 $2$3$4</a>', $newText);
 		return $newText;
 	}
 	
