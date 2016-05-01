@@ -96,6 +96,7 @@ class NewsIssue {
 			$this->newsItems[$i] = new NewsItem($item, $this->issueNumber . '.' . $i, $this);
 		}
 		$this->newsItemsCount = $i;
+		$this->removeDuplicates();
 	}
 	
 	public function getFormattedHTML($emailFormat = false) {
@@ -203,7 +204,7 @@ class NewsIssue {
 			$tocOutput .= '<ul style="padding-left: 5px; margin-top: 8px;">' . "\n";
 			$outputtedNewsTitles = array();
 			foreach ($this->newsItems as $newsItem) {
-				if ( $outputtedNewsTitles[$newsItem->getHash()] == 1){
+				if ( isset( $outputtedNewsTitles[$newsItem->getHash()] ) ){
 					//A title was removed
 				}
 				else {
@@ -233,7 +234,7 @@ class NewsIssue {
 		// the news items themselves
 		$outputtedNewsItems = array();
 		foreach ($this->newsItems as $newsItem) {
-			if ( $outputtedNewsItems[$newsItem->getHash()]){
+			if ( isset( $outputtedNewsItems[$newsItem->getHash()]) ){
 				$out .= "Removed one duplicate item.";
 			}
 			else {
@@ -252,21 +253,38 @@ class NewsIssue {
 		return $out;
 	}
 	
+	private function removeDuplicates(){
+		$outputtedNewsTitles = array();
+		foreach ($this->newsItems as $key => $newsItem) {
+			if ( isset( $outputtedNewsTitles[$newsItem->getHash()] ) ){
+				unset( $this->newsItems[$key]);
+			}
+			else {
+				$outputtedNewsTitles[ $newsItem->getHash() ] = 1;
+			}
+		}
+	}
+	
 	public function getCalendar() {
-		$calendar = 'hi!';
+		$calendar = '';
 		$events = array();
 		foreach ($this->newsItems as $newsItem) {
 			
-			if($event = $newsItem->getEvents()){
-				if( $events[$event[0]]){
-					$events[$event[0]] .= $event[1] . $newsItem->getTOCEntry();
+			//foreach($newsItem->getEvents() as $event){
+			$event = $newsItem->getEvents();
+			$keys = array_keys( $event );
+				foreach( $keys as $key )
+				{
+					if( isset( $events[$key] ) ){
+						$events[$key] .= $event[$key] . $newsItem->getTOCEntry();
+					}
+					else {
+						$events[$key] =
+						"<h2 id = $key>$key</h2> "
+						. $event[$key] . $newsItem->getTOCEntry();
+					}
 				}
-				else {
-					$events[$event[0]] =
-					"<h2 id = $event[0]>$event[0]</h2> "
-					. $event[1] . $newsItem->getTOCEntry();
-				}
-			}
+			//}
 		}
 		foreach( $events as $event ){
 			//TODO: sort these

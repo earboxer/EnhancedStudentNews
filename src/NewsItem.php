@@ -273,20 +273,72 @@ class NewsItem {
 	
 	/**
 	 * getEvents() returns event dates and a description of them
-	 *	Return: $events, an array with key date and description value
+	 *	Receive: $length, an integer number of characters for brief
+	 *	Return: $events, an array
+	 * 		keys like 'January31'
+	 * 		value with string brief of length less than $length characters
+	 * 			(not including elispses...)
 	 */
-	public function getEvents() {
-		$thearray = array();
-		$newBody = preg_match(
-		'/([^\.!><]*) (April|May|June|July|August|September|October|November|December|January|February|March) '
-			. '([0-9]+) (.[^ ]* .[^ ]*)/',
-		$this->body, $thearray);
-		if( $newBody ){
-			return array( $thearray[2] . $thearray[3], $thearray[0] );//Send back the Date and context
+	public function getEvents( $length = 100 ) {
+		$allEvents = array();
+		$matched = 1;
+		$bodyRest = str_replace( '<br />', ' ', $this->body);
+		while ( $matched == 1 )
+		{
+			$thearray = array();
+			$matched = preg_match(
+				'/([^\.\!\>_]* ?)'	//Starts with not punctuation and an optional space
+					. '(April|May|June|July|August|September|October|November|December|January|February|March) '
+					. '([0-9]+)'	//Number
+					. '( ?[^\.!;]*)?'	//Optional non-punctuation
+					. '([\.!;])?/',	//Punctuation at the end
+				$bodyRest, $thearray);
+			
+			if ( $matched == 1 ){
+				$brief = $thearray[0];
+				
+				if( strlen( $brief ) > $length ){ //Trim the brief
+					$introLen = strlen( $thearray[1] );
+					$dateLen = strlen( $thearray[2] . ' ' . $thearray[3]  );
+					$restLen = strlen( $thearray[4] . $thearray[5] );
+					
+					$remainLen = $length - $dateLen; //How much space we can use to get up to the total
+					
+					$date = $thearray[2] . ' ' . $thearray[3];
+					
+					if( ($introLen > (int)$remainLen/2) && ($restLen > (int)$remainLen/2))//both too long
+					{
+						$brief = '...' . substr( $thearray[1], introLen - (int)$remainLen/2 ,(int)$remainLen/2 )
+						. $date//The date
+						. substr( $thearray[4], 0, (int)$remainLen/2) . '...'; //The rest
+					}
+					else if( $introLen > (int)$remainLen/2 ) //Just the intro too long
+					{
+						$remainLen -= $restLen;
+						$brief = '...' . substr( $thearray[1], introLen - $remainLen ,$remainLen )
+						. $date	//The date
+						. $thearray[4] . $thearray[5]; //The rest
+					}
+					else if( $restLen > (int)$remainLen/2 ) //Just the rest too long
+					{
+						$remainLen -= $introLen;
+						$brief = $thearray[1]
+						. $date	//The date
+						. substr( $thearray[4], 0, $remainLen) . '...'; //The rest
+					}
+				}
+				
+				if( isset( $allEvents[ $thearray[2] . $thearray[3] ] ) ){
+					$allEvents[ $thearray[2] . $thearray[3] ] .= '<p>' . $brief . '</p>';
+				}
+				else{
+					$allEvents[ $thearray[2] . $thearray[3] ] = $brief;
+				}
+				$bodyArray = explode($thearray[0], $bodyRest);
+				$bodyRest = $bodyArray[1];
+			}
 		}
-		else {
-			return NULL;
-		}
+		return $allEvents;
 	}
 	
 	private function autoSuperscriptOrdinals($text) {
