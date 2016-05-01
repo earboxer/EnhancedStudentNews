@@ -271,6 +271,24 @@ class NewsItem {
 		return $newText;
 	}
 	
+	/**
+	 * getEvents() returns event dates and a description of them
+	 *	Return: $events, an array with key date and description value
+	 */
+	public function getEvents() {
+		$thearray = array();
+		$newBody = preg_match(
+		'/(.[^ ]* .[^ ]*) (April|May|June|July|August|September|October|November|December|January|February|March) '
+			. '([0-9]+) (.[^ ]* .[^ ]*)/',
+		$this->body, $thearray);
+		if( $newBody ){
+			return array( str_replace( ' ', '', $thearray[2]), $thearray[0] );//Send back the Date and context
+		}
+		else {
+			return NULL;
+		}
+	}
+	
 	private function autoSuperscriptOrdinals($text) {
 		$newText = $text;
 		$newText = preg_replace('/1st([^A-Za-z0-9])/', '1<sup>st</sup>$1', $newText);

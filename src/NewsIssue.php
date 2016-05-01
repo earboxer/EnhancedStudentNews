@@ -228,10 +228,12 @@ class NewsIssue {
 		// close title and contents box
 		$out .= '</div>' . "\n";
 		
+		$out .= $this->getCalendar();
+		
 		// the news items themselves
 		$outputtedNewsItems = array();
 		foreach ($this->newsItems as $newsItem) {
-			if ( $outputtedNewsItems[$newsItem->getHash()] == 1){
+			if ( $outputtedNewsItems[$newsItem->getHash()]){
 				$out .= "Removed one duplicate item.";
 			}
 			else {
@@ -248,6 +250,29 @@ class NewsIssue {
 		$out .= '</div></body></html>';
 		
 		return $out;
+	}
+	
+	public function getCalendar() {
+		$calendar = 'hi!';
+		$events = array();
+		foreach ($this->newsItems as $newsItem) {
+			
+			if($event = $newsItem->getEvents()){
+				if( $events[$event[0]]){
+					$events[$event[0]] .= $event[1] . $newsItem->getTOCEntry();
+				}
+				else {
+					$events[$event[0]] = $event[1] . $newsItem->getTOCEntry();
+				}
+			}
+		}
+		foreach( $events as $event ){
+			//TODO: sort these
+			$calendar .= $event;
+		}
+		return $calendar;
+
+		
 	}
 	
 	public function getRSS() {
