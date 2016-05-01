@@ -286,8 +286,8 @@ class NewsIssue {
 				}
 			//}
 		}
+		$ordered = sort( $events);
 		foreach( $events as $event ){
-			//TODO: sort these
 			$calendar .= $event;
 		}
 		return $calendar;
