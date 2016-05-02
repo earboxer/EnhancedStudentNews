@@ -16,6 +16,7 @@ class NewsItem {
 	
 	public $hasFood = false;
 	public $maybeFood = false;
+	public $foodString = '';
 	
 	private $asterisksNSuch = '';
 	
@@ -85,14 +86,17 @@ class NewsItem {
 		
 		// TODO Determine whether it is better to fix special characters in the news item body
 		//      *before* or *after* unwrapping the text.
-		
+		$this->checkForFoods();
+	}
+	
+	function checkForFoods(){
 		if ($this->newsIssue->isStudentNews) {
 			$foods = '(breakfast|lunch|dinner|supper|food|pizza|refreshments|appetizers|snacks|bagels)';
 			if (strpos(strtolower($this->body), 'refreshments') !== false
-					|| preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', strtolower($this->body))
-					|| preg_match('#(free|there will be)[^.!?;]+' . $foods . '#s', strtolower($this->body))) {
+				|| preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', strtolower($this->body))
+				|| preg_match('#(free|there will be)[^.!?;]+' . $foods . '#s', strtolower($this->body))) {
 				$this->hasFood = true;
-			} else if ($this->newsIssue->isStudentNews && preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body))) {
+			} else if (preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body))) {
 				$this->maybeFood = true;
 			}
 		}
