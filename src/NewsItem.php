@@ -92,12 +92,18 @@ class NewsItem {
 	function checkForFoods(){
 		if ($this->newsIssue->isStudentNews) {
 			$foods = '(breakfast|lunch|dinner|supper|food|pizza|refreshments|appetizers|snacks|bagels)';
-			if (strpos(strtolower($this->body), 'refreshments') !== false
-				|| preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', strtolower($this->body))
-				|| preg_match('#(free|there will be)[^.!?;]+' . $foods . '#s', strtolower($this->body))) {
+			$provided = array();
+			$therewillbe = array();
+			$maybe = array();
+			if (//strpos(strtolower($this->body), 'refreshments') !== false ||
+				 preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', strtolower($this->body), $provided)
+				|| preg_match('#(free|there will be)[^.!?;]+' . $foods . '#s', strtolower($this->body),$therewillbe)) {
+				$this->foodString .= $provided[1];
+				$this->foodString .= $therewillbe[2];
 				$this->hasFood = true;
-			} else if (preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body))) {
+			} else if (preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body), $maybe)) {
 				$this->maybeFood = true;
+				$this->foodString .= $maybe[1];
 			}
 		}
 	}
@@ -111,6 +117,7 @@ class NewsItem {
 		if ($this->newsIssue->isStudentNews && $this->hasFood) {
 			//$out .= ' <span style="background-color: #ffff66; font-weight: bold; font-size: small; border: solid 1px black; padding: 0px 2px;">FOOD</span>';
 			$out .= $this->asterisksNSuch = ' *';
+			$out .= $this->foodString;
 		} else if ($this->newsIssue->isStudentNews && $this->maybeFood && isset($_GET['debugFood'])) {
 			$out .= $this->asterisksNSuch = ' <span style="color:#666666">*?</span>';
 		}
