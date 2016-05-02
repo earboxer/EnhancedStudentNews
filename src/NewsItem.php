@@ -17,6 +17,7 @@ class NewsItem {
 	public $hasFood = false;
 	public $maybeFood = false;
 	public $foodString = '';
+	public $maybeFoodString = '';
 	
 	private $asterisksNSuch = '';
 	
@@ -92,21 +93,115 @@ class NewsItem {
 	function checkForFoods(){
 		if ($this->newsIssue->isStudentNews) {
 			$foods = '(breakfast|lunch|dinner|supper|food|pizza|refreshments|appetizers|snacks|bagels)';
+			$foodEmoji = array(
+				'pizza' => '🍕',
+				'food' => '🍴',
+				'lunch' => '🍹',
+				'refreshments' => '🍹',
+				'grapes' => '🍇',
+				'melon' => '🍈',
+				'watermelon' => '🍉',
+				'tangerine' => '🍊',
+				'lemon' => '🍋',
+				'banana' => '🍌',
+				'pineapple' => '🍍',
+				'apple' => '🍎',
+				'green apple' => '🍏'
+							   /*
+							   🍐 Pear
+							   🍑 Peach
+							   🍒 Cherries
+							   🍓 Strawberry
+							   🍅 Tomato
+							   🍆 Aubergine
+							   🌽 Ear of Maize
+							   🌶 Hot Pepper
+							   🍄 Mushroom
+							   🌰 Chestnut
+							   🍞 Bread
+							   🧀 Cheese Wedge
+							   🍖 Meat on Bone
+							   🍗 Poultry Leg
+							   🍔 Hamburger
+							   🍟 French Fries
+							   🌭 Hot Dog
+							   🌮 Taco
+							   🌯 Burrito
+							   🍿 Popcorn
+							   🍲 Pot of Food
+							   🍱 Bento Box
+							   🍘 Rice Cracker
+							   🍙 Rice Ball
+							   🍚 Cooked Rice
+							   🍛 Curry and Rice
+							   🍜 Steaming Bowl
+							   🍝 Spaghetti
+							   🍠 Roasted Sweet Potato
+							   🍢 Oden
+							   🍣 Sushi
+							   🍤 Fried Shrimp
+							   🍥 Fish Cake With Swirl Design
+							   🍡 Dango
+							   🍦 Soft Ice Cream
+							   🍧 Shaved Ice
+							   🍨 Ice Cream
+							   🍩 Doughnut
+							   🍪 Cookie
+							   🎂 Birthday Cake
+							   🍰 Shortcake
+							   🍫 Chocolate Bar
+							   🍬 Candy
+							   🍭 Lollipop
+							   🍮 Custard
+							   🍯 Honey Pot
+							   🍼 Baby Bottle
+							   ☕ Hot Beverage
+							   🍵 Teacup Without Handle
+							   🍶 Sake Bottle and Cup
+							   🍾 Bottle With Popping Cork
+							   🍷 Wine Glass
+							   🍸 Cocktail Glass
+							   🍹 Tropical Drink
+							   🍺 Beer Mug
+							   🍻 Clinking Beer Mugs
+							   🍽 Fork and Knife With Plate
+							   🍴 Fork and Knife
+							   🍳 Cooking*/
+							   );
+			$matched = 1;
+			$found = array();
 			$provided = array();
 			$therewillbe = array();
-			$maybe = array();
-			if (//strpos(strtolower($this->body), 'refreshments') !== false ||
-				 preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', strtolower($this->body), $provided)
-				|| preg_match('#(free|there will be)[^.!?;]+' . $foods . '#s', strtolower($this->body),$therewillbe)) {
-				$this->foodString .= $provided[1];
-				$this->foodString .= $therewillbe[2];
+			$textToSearch = strtolower($this->body);
+			while( preg_match('#' . $foods . '[^.!?;]+(provided|available|included|served|offered)#s', $textToSearch, $found))
+			{
 				$this->hasFood = true;
-			} else if (preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body), $maybe)) {
-				$this->maybeFood = true;
-				$this->foodString .= $maybe[1];
+				$this->foodString .= $found[1];
+				$textToArray = explode($found[0], $textToSearch);
+				$textToSearch = $textToArray[1];
 			}
+			while( preg_match('#(free|there will be|come and eat)[^.!?;]+' . $foods . '#s', $textToSearch, $found) )
+			{
+				$this->hasFood = true;
+				$this->foodString .= $found[2];
+				$textToArray = explode($found[0], $textToSearch);
+				$textToSearch = $textToArray[1];
+			}
+			while( preg_match('#' . $foods . '#s', $textToSearch, $found) )
+			{
+				$this->maybeFood = true;
+				$this->maybeFoodString .= $foodEmoji[$found[1]] . '?';
+				$textToArray = explode($found[0], $textToSearch);
+				$textToSearch = $textToArray[1];
+			}
+			/*$maybe = array();
+			if (preg_match('#(breakfast|lunch|dinner|supper|pizza|refreshment|appetizer|snack|bagel|donut|doughnut|cookie)#s', strtolower($this->body), $maybe)) {
+				$this->maybeFood = true;
+				//$this->foodString .= $maybe[1];
+			}*/
 		}
 	}
+
 	
 	function getTOCEntry() {
 		// for some reason, Gmail puts a 15px margin-left on list items, so this margin-left will apply it in other clients
@@ -117,10 +212,11 @@ class NewsItem {
 		if ($this->newsIssue->isStudentNews && $this->hasFood) {
 			//$out .= ' <span style="background-color: #ffff66; font-weight: bold; font-size: small; border: solid 1px black; padding: 0px 2px;">FOOD</span>';
 			$out .= $this->asterisksNSuch = ' *';
-			$out .= $this->foodString;
+			$out .= ' ' . $this->foodString;
 		} else if ($this->newsIssue->isStudentNews && $this->maybeFood && isset($_GET['debugFood'])) {
 			$out .= $this->asterisksNSuch = ' <span style="color:#666666">*?</span>';
 		}
+		$out .= ' ' . $this->maybeFoodString;
 		
 		if (!isset($_GET['debugFood'])) {
 			$this->asterisksNSuch = '';
