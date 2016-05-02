@@ -280,14 +280,15 @@ class NewsIssue {
 					}
 					else {
 						$events[$key] =
-						"<h2 id = " . date( 'Fj', $key). ">" . date( 'F j', $key) . "</h2> "
+						"<h2 id = " . date( 'Fj', $key). ">" . date( 'F j Y', $key) . " $key</h2> "
 						. $event[$key] . $newsItem->getTOCEntry();
 					}
 				}
 			//}
 		}
-		$ordered = sort( $events);
+		$ordered = sort( $events );
 		foreach( $events as $event ){
+			//TODO properly sort, format, etc
 			$calendar .= $event;
 		}
 		return $calendar;
